@@ -1,0 +1,48 @@
+# assuming you've got solo-open-source-components-1.1.12.tar.gz and a git check of the  sololink_v1.3.0-5 branch from the imx6-linux repo to start with.
+mkdir components
+cd components/
+tar -zxvpf ../solo-open-source-components-1.1.12.tar.gz 
+cd ..
+
+
+cd kernel
+ls ../components/gpl_source_release_1.1.12/GPL-2.0/linux-imx-3.10.17-r0/
+linux-imx-3.10.17-r0-prepatch.tar.gz
+linux-imx-3.10.17-r0-series.tar.gz
+linux-imx-3.10.17-r0.diff.gz
+linux-imx-3.10.17-r0.showdata.dump
+# start building in the 'kernel' folder...
+cp ../components/gpl_source_release_1.1.12/GPL-2.0/linux-imx-3.10.17-r0/* .
+# Extracted all three files. One contained the kernel source, one contained a bunch of patches, one contained a .diff file.
+tar -zxvpf linux-imx-3.10.17-r0-prepatch.tar.gz 
+tar -zxvpf linux-imx-3.10.17-r0-series.tar.gz      
+gunzip linux-imx-3.10.17-r0.diff.gz 
+# tip: kernel is in 'git'... ie: OpenSolo/kernel/git/ folder.
+# Applied the patches and the diff:
+cd linux-imx-3.10.17-r0-series
+bunzip2 patch-3.10.17-rt12.patch.bz2
+ cp *.patch ../git/
+cd ../git
+patch -p1 < 0001-dts-changes-to-add-uart5.patch
+patch -p1 < 0001-fix-build.patch
+patch -p1 < 0002-fix-build-with-rt-enabled.patch
+patch -p1 < 0003-no-split-ptlocks.patch
+patch -p1 < patch-3.10.17-rt12.patch
+patch -p1 < aufs3-base.patch
+patch -p1 < aufs3-kbuild.patch
+patch -p1 < aufs3-mmap.patch
+patch -p1 < aufs3-standalone.patch
+
+# TO BE CONTINUED.... please try at https://discuss.dronekit.io/t/compiling-additional-drivers-for-solo-usb-port/654/ mmaybe you can fogure out what to add below here...
+
+
+
+
+
+
+
+
+
+
+
+
