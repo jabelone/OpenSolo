@@ -7,6 +7,20 @@ https://github.com/3drobotics/imx6-linux
 probably:
 https://github.com/3drobotics/imx6-linux/tree/sololink_v1.3.0-5
 
+https://3dr.com/about/open-source/
+has a full list of version numbers of user-space software, such as uboot, gstreamer, python, busybox, etc etc.
+and including:
+solo-open-source-components-1.1.12.tar.gz
+solo-open-source-components.tar.gz
+at: http://solo-open-source.s3-website-us-east-1.amazonaws.com/solo-open-source-components-1.1.12.tar.gz
+
+# get some known solo sources:
+#see https://github.com/3drobotics/imx6-linux/tree/sololink_v1.3.0-5
+git clone git@github.com:3drobotics/imx6-linux.git
+git checkout sololink_v1.3.0-5
+# and:
+wget http://solo-open-source.s3-website-us-east-1.amazonaws.com/solo-open-source-components-1.1.12.tar.gz
+
 also:
 https://github.com/3drobotics/solo-cli
 
