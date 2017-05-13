@@ -1,0 +1,84 @@
+3dr "factory reset" procedure, and pairing procedure:
+https://3dr.com/support/articles/factory_reset/ and 
+https://3dr.com/support/articles/pairing_the_controller/
+
+kernel
+https://github.com/3drobotics/imx6-linux
+probably:
+https://github.com/3drobotics/imx6-linux/tree/sololink_v1.3.0-5
+
+also:
+https://github.com/3drobotics/solo-cli
+
+also tips on how to reflash are found here:
+https://github.com/3drobotics/solo-cli/blob/master/soloutils/flash.py
+in short:
+scp the file/s ( a .tar.gz, and a .tar.gz.md5 )  to /log/updates/ then run 'touch /log/updates/UPDATE && shutdown -r now'
+ls /log/updates
+solo_2.4.2.tar.gz      solo_2.4.2.tar.gz.md5
+contents of the .tar.gz:
+3dr-solo-imx6solo-3dr-1080p.squashfs
+imx6solo-3dr-1080p.dtb
+u-boot.imx
+uImage
+
+details:
+3dr-solo-imx6solo-3dr-1080p.squashfs: Squashfs filesystem, little endian, version 4.0
+uImage : a linux kernel in uboot format 
+imx6solo-3dr-1080p.dtb : a device-tree file ( .dtb ) which is usually loaded into memory and passed to the kernel by u-Boot
+u-boot.imx : which is a u-boot binary itself, ‘strings’ of that file tells me its U-Boot 2013.04 
+
+looking inside the .squashfs filesystem ( readonly):
+mkdir /mnt/squashfs ; mount 3dr-solo-imx6solo-3dr-1080p.squashfs /mnt/squashfs/ -t squashfs  ; ls /mnt/squashfs
+
+we've found that if you 'unsquashfs 3dr-solo-imx6solo-3dr-1080p.squashfs' ( perhaps on another computer ), you can then tweak some files inside the folder 'squashfs-root' ( eg 'touch squashfs-root/BUZZ_WAS_HERE.txt' ) 
+then remake the .squashfs file:
+mksquashfs squashfs-root buzz-3dr-solo-imx6solo-3dr-1080p.squashfs
+then recompress it as a .tar.gz using the original name for consistency:
+cp buzz-3dr-solo-imx6solo-3dr-1080p.squashfs 3dr-solo-imx6solo-3dr-1080p.squashfs
+tar -c -f solo_2.4.2-buzz.tar imx6solo-3dr-1080p.dtb uImage 3dr-solo-imx6solo-3dr-1080p.squashfs u-boot.imx
+gzip solo_2.4.2-buzz.tar
+# rename for consistency with original
+cp solo_2.4.2-buzz.tar.gz  solo_2.4.2.tar.gz
+#re-create the solo_2.4.2.tar.gz.md5 file and 
+md5sum solo_2.4.2.tar.gz > solo_2.4.2.tar.gz.md5
+#it should all flash pretty happily:
+touch /log/updates/UPDATE && shutdown -r now
+# after reboot, look for 'ls -l /log/updates/UPDATEFAILED' file if it didn't work
+
+
+similar hardware here: 
+http://www.imx6rex.com/software/imx6-rex-software/
+
+lots of good stuff at:
+https://dev.3dr.com/
+
+including 
+https://dev.3dr.com/starting-installing.html
+
+very long discussion between two devs trying to rebuild a kernel and modules that are compatible with existing system:
+https://discuss.dronekit.io/t/compiling-additional-drivers-for-solo-usb-port/654
+
+a good pair of repositories for non-3dr binary packages for yocto-linux 1.5.1:
+http://downloads.yoctoproject.org/releases/yocto/yocto-1.5.1/rpm/cortexa9hf_vfp_neon/
+http://downloads.yoctoproject.org/releases/yocto/yocto-1.5.1/rpm/cortexa9hf_vfp_neon_mx6/
+
+getting a compiler on solo itself:
+how to get a working compiler on solo in a comment on a random issue here:   https://github.com/3drobotics/solodevguide/issues/255#issuecomment-217662999
+ie:
+on PC first: 
+solo wifi …  
+solo resize
+on solo itself: 
+smart channel --remove cortexa9hf_vfp_neon -y
+smart channel --remove cortexa9hf_vfp_neon_mx6 -y
+smart channel --add cortexa9hf_vfp_neon type=rpm-md baseurl=http://downloads.yoctoproject.org/releases/yocto/yocto-1.5.1/rpm/cortexa9hf_vfp_neon/ -y
+smart channel --add cortexa9hf_vfp_neon_mx6 type=rpm-md baseurl=http://downloads.yoctoproject.org/releases/yocto/yocto-1.5.1/rpm/cortexa9hf_vfp_neon_mx6/ -y
+smart update
+smart install gcc gcc-symlinks libc6-dev gcc-dev binutils python-dev -y
+gcc -v
+to revert channel changes etc ( if something didn’t work right ):
+on PC:
+solo install-smart
+
+
