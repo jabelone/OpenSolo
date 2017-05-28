@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # this bit only works on platforms with apt-get, which we probably are, but don't fail if we aren't.  
 command -v apt-get >/dev/null 2>&1 || { 
@@ -29,7 +29,7 @@ if [ -f $FILE ]; then
     echo "using already extracted kernel bits as u seem to have them already...."
 else
     echo "uncomressing kernel bits from the .tar.gz we just downloaded.....please wait..( slow)"
-    tar -jxvpf solo-open-source-components-1.1.12.tar.gz --include=\'*gpl_source_release_1.1.12/GPL-2.0/linux-imx-3.10.17-r0*\'
+    tar -jxvpf solo-open-source-components-1.1.12.tar.gz --include='*gpl_source_release_1.1.12/GPL-2.0/linux-imx-3.10.17-r0*'
 fi
 #' 
 cd ..
